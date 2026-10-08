@@ -1,0 +1,30 @@
+-- Panda Auth - PUSL-V4
+local PUSL = loadstring(game:HttpGet("https://pandauth.com"))()
+if not PUSL or type(PUSL.configure) ~= "function" then
+    return warn("[Panda] Library failed to initialize.")
+end
+
+PUSL.configure({
+    serviceId = "n7atop1",
+})
+
+-- قراءة المفتاح تلقائياً من الأداة
+local key = _G.Key or "USER_KEY_HERE" 
+local result = PUSL.validate(key)
+
+if not result.success then
+    warn("[Panda] Get a key: " .. PUSL.getKeyUrl())
+    return
+end
+
+print("[Panda] Authenticated. Premium:", result.isPremium)
+
+-- سكريبت السرعة الخاص بك
+if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
+end
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = 50
+end)
