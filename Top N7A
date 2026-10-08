@@ -1,0 +1,61 @@
+-- =======================================================
+-- SYSTEM ID: n7atop1 | SYSTEM PACKAGE: FULL UNTOUCHED
+-- =======================================================
+
+-- إعداد النظام المتكامل
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local TargetSpeed = 60 -- السرعة المخصصة لماب Brookhaven
+local SpeedEnabled = false
+
+-- قراءة المفتاح تلقائياً من الأداة أو الكود
+local UserKey = _G.Key or "USER_KEY_HERE"
+
+-- قاعدة بيانات المفاتيح المدمجة الخاصة بك بالكامل (VIP والتجريبية والدائمة)
+local KeyDatabase = {
+    ["VIP-USER-9921"] = {year = 2026, month = 10, day = 15},
+    ["TRIAL-KEY-55"]  = {year = 2026, month = 10, day = 9},
+    ["G-H45V-DUP3-GW8H-3JLR"] = {year = 2026, month = 10, day = 30} -- المفتاح الحالي
+}
+
+-- تشغيل نظام التحقق من المفاتيح والوقت تلقائياً
+if KeyDatabase[UserKey] then
+    local ExpiryDate = KeyDatabase[UserKey]
+    local CurrentTimeTable = os.date("!*t")
+    local CurrentTimestamp = os.time(CurrentTimeTable)
+    local ExpiryTimestamp = os.time({year = ExpiryDate.year, month = ExpiryDate.month, day = ExpiryDate.day, hour = 23, min = 59, sec = 59})
+    
+    if CurrentTimestamp <= ExpiryTimestamp then
+        print("[نظام المفاتيح]: تم التحقق بنجاح!")
+        
+        -- إرسال إشعار داخل اللعبة بتأكيد التشغيل
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "تم التحقق بنجاح!";
+            Text = "مرحباً بك، تم تفعيل سكريبت Brookhaven المتكامل!";
+            Duration = 5;
+        })
+        SpeedEnabled = true
+    else
+        LocalPlayer:Kick("[نظام المفاتيح]: عذراً، هذا المفتاح انتهت مدة صلاحيته!")
+        return
+    end
+else
+    LocalPlayer:Kick("[نظام الحماية الكامل]: مفتاح خاطئ أو غير موجود! يرجى إدخال مفتاح صحيح.")
+    return
+end
+
+-- كود تشغيل السرعة المتوافق تلقائياً مع ماب Brookhaven (يعمل فقط بعد تخطي الحماية)
+RunService.Heartbeat:Connect(function(step)
+    if SpeedEnabled and LocalPlayer.Character then
+        local rootPart = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        
+        if rootPart and humanoid and humanoid.MoveDirection.Magnitude > 0 then
+            -- تحريك الجسم برمجياً بأعلى سرعة لتخطي نظام طرد وحماية ماب البيوت
+            rootPart.CFrame = rootPart.CFrame + (humanoid.MoveDirection * (TargetSpeed * step))
+        end
+    end
+end)
+
+print("[نظام Brookhaven الشامل]: الجهاز المتكامل مفعّل وقاعدة البيانات مستقرة 100%.")
