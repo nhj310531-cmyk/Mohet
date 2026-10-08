@@ -1,0 +1,42 @@
+-- ضع المفتاح الذي نسخته من الموقع بين علامات التنصيص بالأسفل
+_G.Key = "ضع_المفتاح_هنا"
+
+-- كود الحماية والسكربت الخاص بك المدمج بالكامل بعد التصحيح
+local PUSL = loadstring(game:HttpGet("https://pandascripts.xyz"))()
+if not PUSL or type(PUSL.configure) ~= "function" then
+    return warn("[Panda] Library failed to initialize.")
+end
+
+PUSL.configure({
+    serviceId = "n7atop1",
+})
+
+local UserKey = _G.Key or "USER_KEY_HERE"
+local result = PUSL.validate(UserKey)
+
+if result.success then
+    print("[Panda]: تم التحقق عبر السيرفر بنجاح!")
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50 
+    return
+end
+
+local KeyDatabase = {
+    ["VIP-USER-9921"] = {year = 2026, month = 10, day = 15},
+    ["TRIAL-KEY-55"]  = {year = 2026, month = 10, day = 9},
+}
+
+if KeyDatabase[UserKey] then
+    local ExpiryDate = KeyDatabase[UserKey]
+    local CurrentTimeTable = os.date("!*t")
+    local CurrentTimestamp = os.time(CurrentTimeTable)
+    local ExpiryTimestamp = os.time({year = ExpiryDate.year, month = ExpiryDate.month, day = ExpiryDate.day, hour = 23, min = 59, sec = 59})
+    
+    if CurrentTimestamp <= ExpiryTimestamp then
+        print("[نظام المفاتيح]: تم التحقق بنجاح!")
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50 
+    else
+        game.Players.LocalPlayer:Kick("[نظام المفاتيح]: عذراً، هذا المفتاح انتهت مدة صلاحيته!")
+    end
+else
+    game.Players.LocalPlayer:Kick("[نظام الحماية الكامل]: مفتاح خاطئ أو غير موجود! احصل عليه من: " .. PUSL.getKeyUrl())
+end
